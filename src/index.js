@@ -4,6 +4,7 @@ const HEIGHT = 600
 const SNAKE_COLOR = '#0000FF'
 const HEAD_COLOR = '#00FF00'
 const FOOD_COLOR = '#FF0000'
+const MINIMAL_FRAME_INTERVAL = 200
 
 const CONTEXT = document.querySelector('#canvas').getContext('2d')
 
@@ -15,8 +16,47 @@ const INITIAL_STATE = {
         { x: 32, y: 30 }
     ],
     food: [
-        { x: 40, y: 50 }
-    ]
+        { x: 10, y: 30 }
+    ],
+    direction: 'left'
+}
+
+function generateFood(coord) {
+    const maxX = Math.floor(WIDTH / UNIT_LENGTH)
+    const maxY = Math.floor(HEIGHT / UNIT_LENGTH)
+    let x, y
+    do {
+        x = Math.floor(Math.random() * maxX)
+        y = Math.floor(Math.random() * maxY)
+    } while (x === coord.x && y === coord.y)
+    return { x, y }
+}
+
+function nextState(state) {
+    const { snake, food, direction } = state
+    const [head, ...rest] = snake
+    const newHead = { ...head }
+    if (direction === 'left') {
+        newHead.x -= 1
+    } else if (direction === 'right') {
+        newHead.x += 1
+    } else if (direction === 'up') {
+        newHead.y -= 1
+    } else if (direction === 'down') {
+        newHead.y += 1
+    }
+    const foodEatenIndex = food.findIndex(({ x, y }) => x === newHead.x && y === newHead.y)
+    if (foodEatenIndex !== -1) {
+        const foodEaten = food[foodEatenIndex]
+        food.splice(foodEatenIndex, 1, generateFood(foodEaten))
+    } else {
+        rest.pop()
+    }
+    return {
+        snake: [newHead, head, ...rest],
+        food,
+        direction
+    }
 }
 
 function drawSnakePart(coord, isHead) {
@@ -50,4 +90,22 @@ function drawBoard(state) {
     body.map(drawBody)
 }
 
-drawBoard(INITIAL_STATE)
+let previousTimestamp = 0
+let state = INITIAL_STATE
+function loop(timestamp) {
+    if (timestamp - previousTimestamp > MINIMAL_FRAME_INTERVAL) {
+        console.log(state)
+        previousTimestamp = timestamp
+        drawBoard(state)
+        state = nextState(state)
+    }
+    window.requestAnimationFrame(loop)
+}
+
+
+document
+    .querySelector('#start')
+    .addEventListener('click', function() {
+        window.requestAnimationFrame(loop)
+        this.setAttribute('disabled', true)
+    })
