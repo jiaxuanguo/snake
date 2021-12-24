@@ -18,7 +18,8 @@ const INITIAL_STATE = {
     food: [
         { x: 10, y: 30 }
     ],
-    direction: 'left'
+    direction: 'left',
+    directionChanged: false
 }
 
 function generateFood(occupied) {
@@ -55,7 +56,8 @@ function nextState(state) {
     return {
         snake: [newHead, head, ...rest],
         food,
-        direction
+        direction,
+        directionChanged: false
     }
 }
 
@@ -101,11 +103,34 @@ function loop(timestamp) {
     }
     window.requestAnimationFrame(loop)
 }
-
+function changeDirection(key) {
+    const { direction, directionChanged } = state
+    let newDirection = direction
+    if (!directionChanged) {
+        if (key === 'ArrowUp' && direction !== 'down') {
+            newDirection = 'up'
+        } else if (key === 'ArrowDown' && direction !== 'up') {
+            newDirection = 'down'
+        } else if (key === 'ArrowLeft' && direction !== 'right') {
+            newDirection = 'left'
+        } else if (key === 'ArrowRight' && direction !== 'left') {
+            newDirection = 'right'
+        }
+    }
+    state = {
+        ...state,
+        direction: newDirection,
+        directionChanged: newDirection !== direction
+    }
+}
+function directionListener(e) {
+    changeDirection(e.key)
+}
 
 document
     .querySelector('#start')
     .addEventListener('click', function() {
+        document.addEventListener('keydown', directionListener)
         window.requestAnimationFrame(loop)
         this.setAttribute('disabled', true)
     })
