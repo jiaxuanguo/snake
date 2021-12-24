@@ -21,14 +21,15 @@ const INITIAL_STATE = {
     direction: 'left'
 }
 
-function generateFood(coord) {
+function generateFood(occupied) {
+    const collision = point => occupied.some(({ x, y }) => x === point.x && y === point.y)
     const maxX = Math.floor(WIDTH / UNIT_LENGTH)
     const maxY = Math.floor(HEIGHT / UNIT_LENGTH)
     let x, y
     do {
         x = Math.floor(Math.random() * maxX)
         y = Math.floor(Math.random() * maxY)
-    } while (x === coord.x && y === coord.y)
+    } while (collision({ x, y }))
     return { x, y }
 }
 
@@ -47,8 +48,7 @@ function nextState(state) {
     }
     const foodEatenIndex = food.findIndex(({ x, y }) => x === newHead.x && y === newHead.y)
     if (foodEatenIndex !== -1) {
-        const foodEaten = food[foodEatenIndex]
-        food.splice(foodEatenIndex, 1, generateFood(foodEaten))
+        food.splice(foodEatenIndex, 1, generateFood([...food, ...snake, newHead]))
     } else {
         rest.pop()
     }
