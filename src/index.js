@@ -7,6 +7,7 @@ const SNAKE_COLOR = '#0000FF'
 const HEAD_COLOR = '#00FF00'
 const FOOD_COLOR = '#FF0000'
 const MINIMAL_FRAME_INTERVAL = 200
+const POINTS_PER_FOOD = 10
 
 const CONTEXT = document.querySelector('#canvas').getContext('2d')
 
@@ -25,6 +26,12 @@ const INITIAL_STATE = {
     gameState: 'ongoing'
 }
 
+function updateScore(points) {
+    const scoreElement = document.querySelector('.score')
+    const oldScore = parseInt(scoreElement.innerHTML, 10)
+    scoreElement.innerHTML = oldScore + points
+
+}
 function collision(point, points) {
     return points.some(({ x, y }) => x === point.x && y === point.y)
 }
@@ -55,6 +62,7 @@ function nextState(state) {
     const foodEatenIndex = food.findIndex(({ x, y }) => x === newHead.x && y === newHead.y)
     if (foodEatenIndex !== -1) {
         food.splice(foodEatenIndex, 1, generateFood([...food, ...snake, newHead]))
+        updateScore(POINTS_PER_FOOD)
     } else {
         rest.pop()
     }
