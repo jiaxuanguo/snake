@@ -21,7 +21,8 @@ const INITIAL_STATE = {
         { x: 10, y: 30 }
     ],
     direction: 'left',
-    directionChanged: false
+    directionChanged: false,
+    gameState: 'ongoing'
 }
 
 function collision(point, points) {
@@ -37,7 +38,7 @@ function generateFood(occupied) {
 }
 
 function nextState(state) {
-    const { snake, food, direction } = state
+    const { snake, food, direction, gameState } = state
     const [head, ...rest] = snake
     const newHead = { ...head }
     if (direction === 'left') {
@@ -49,6 +50,8 @@ function nextState(state) {
     } else if (direction === 'down') {
         newHead.y += 1
     }
+    const ranIntoBody = collision(newHead, snake)
+    const withinBoard = newHead.x >= 0 && newHead.x < MAX_X && newHead.y >= 0 && newHead.y <MAX_Y
     const foodEatenIndex = food.findIndex(({ x, y }) => x === newHead.x && y === newHead.y)
     if (foodEatenIndex !== -1) {
         food.splice(foodEatenIndex, 1, generateFood([...food, ...snake, newHead]))
@@ -59,7 +62,8 @@ function nextState(state) {
         snake: [newHead, head, ...rest],
         food,
         direction,
-        directionChanged: false
+        directionChanged: false,
+        gameState: (ranIntoBody || !withinBoard) ? 'ended' : gameState
     }
 }
 
@@ -97,13 +101,17 @@ function drawBoard(state) {
 let previousTimestamp = 0
 let state = INITIAL_STATE
 function loop(timestamp) {
-    if (timestamp - previousTimestamp > MINIMAL_FRAME_INTERVAL) {
-        console.log(state)
-        previousTimestamp = timestamp
-        drawBoard(state)
-        state = nextState(state)
+    console.log(state)
+    if (state.gameState === 'ongoing') {
+        if (timestamp - previousTimestamp > MINIMAL_FRAME_INTERVAL) {
+            previousTimestamp = timestamp
+            drawBoard(state)
+            state = nextState(state)
+        }
+        window.requestAnimationFrame(loop)
+    } else {
+        alert('game over')
     }
-    window.requestAnimationFrame(loop)
 }
 function changeDirection(key) {
     const { direction, directionChanged } = state
