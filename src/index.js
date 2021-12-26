@@ -22,15 +22,17 @@ const INITIAL_STATE = {
     directionChanged: false
 }
 
+function collision(point, points) {
+    return points.some(({ x, y }) => x === point.x && y === point.y)
+}
 function generateFood(occupied) {
-    const collision = point => occupied.some(({ x, y }) => x === point.x && y === point.y)
     const maxX = Math.floor(WIDTH / UNIT_LENGTH)
     const maxY = Math.floor(HEIGHT / UNIT_LENGTH)
     let x, y
     do {
         x = Math.floor(Math.random() * maxX)
         y = Math.floor(Math.random() * maxY)
-    } while (collision({ x, y }))
+    } while (collision({ x, y }, occupied))
     return { x, y }
 }
 
