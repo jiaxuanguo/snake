@@ -1,6 +1,8 @@
 const UNIT_LENGTH = 10
 const WIDTH = 600
 const HEIGHT = 600
+const MAX_X = Math.floor(WIDTH / UNIT_LENGTH)
+const MAX_Y = Math.floor(HEIGHT / UNIT_LENGTH)
 const SNAKE_COLOR = '#0000FF'
 const HEAD_COLOR = '#00FF00'
 const FOOD_COLOR = '#FF0000'
@@ -26,12 +28,10 @@ function collision(point, points) {
     return points.some(({ x, y }) => x === point.x && y === point.y)
 }
 function generateFood(occupied) {
-    const maxX = Math.floor(WIDTH / UNIT_LENGTH)
-    const maxY = Math.floor(HEIGHT / UNIT_LENGTH)
     let x, y
     do {
-        x = Math.floor(Math.random() * maxX)
-        y = Math.floor(Math.random() * maxY)
+        x = Math.floor(Math.random() * MAX_X)
+        y = Math.floor(Math.random() * MAX_Y)
     } while (collision({ x, y }, occupied))
     return { x, y }
 }
