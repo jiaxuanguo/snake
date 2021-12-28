@@ -1,4 +1,4 @@
-const UNIT_LENGTH = 10
+const UNIT_LENGTH = 20
 const WIDTH = 600
 const HEIGHT = 600
 const MAX_X = Math.floor(WIDTH / UNIT_LENGTH)
@@ -11,15 +11,17 @@ const POINTS_PER_FOOD = 10
 
 const CONTEXT = document.querySelector('#canvas').getContext('2d')
 
+const HEAD_INITIAL_X = Math.floor(MAX_X / 2)
+const HEAD_INITIAL_Y = Math.floor(MAX_Y / 2)
 
 const INITIAL_STATE = {
     snake: [
-        { x: 30, y: 30 },
-        { x: 31, y: 30 },
-        { x: 32, y: 30 }
+        { x: HEAD_INITIAL_X, y: HEAD_INITIAL_Y },
+        { x: HEAD_INITIAL_X + 1, y: HEAD_INITIAL_Y },
+        { x: HEAD_INITIAL_X + 2, y: HEAD_INITIAL_Y }
     ],
     food: [
-        { x: 10, y: 30 }
+        { x: Math.max(0, HEAD_INITIAL_X - 5), y: HEAD_INITIAL_Y }
     ],
     direction: 'left',
     directionChanged: false,
