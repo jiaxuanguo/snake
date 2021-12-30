@@ -121,6 +121,8 @@ function loop(timestamp) {
         window.requestAnimationFrame(loop)
     } else {
         alert('game over')
+        document
+          .querySelector('#start')?.removeAttribute('disabled')
     }
 }
 function changeDirection(key) {
@@ -151,6 +153,7 @@ document
     .querySelector('#start')
     .addEventListener('click', function() {
         document.addEventListener('keydown', directionListener)
+        state = INITIAL_STATE
         window.requestAnimationFrame(loop)
         this.setAttribute('disabled', true)
     })
