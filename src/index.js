@@ -32,7 +32,6 @@ function updateScore(points) {
     const scoreElement = document.querySelector('.score')
     const oldScore = parseInt(scoreElement.innerHTML, 10)
     scoreElement.innerHTML = oldScore + points
-
 }
 function collision(point, points) {
     return points.some(({ x, y }) => x === point.x && y === point.y)
@@ -110,6 +109,12 @@ function drawBoard(state) {
 
 let previousTimestamp = 0
 let state = INITIAL_STATE
+function cleanup() {
+    alert('game over')
+    document.querySelector('.score').innerHTML = '' + 0
+    document.removeEventListener('keydown', directionListener)
+    document.querySelector('#start')?.removeAttribute('disabled')
+}
 function loop(timestamp) {
     console.log(state)
     if (state.gameState === 'ongoing') {
@@ -120,9 +125,7 @@ function loop(timestamp) {
         }
         window.requestAnimationFrame(loop)
     } else {
-        alert('game over')
-        document
-          .querySelector('#start')?.removeAttribute('disabled')
+        cleanup()
     }
 }
 function changeDirection(key) {
